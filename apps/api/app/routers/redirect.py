@@ -1,9 +1,11 @@
+
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 
 from app.database import SessionLocal
 from app.services.links_service import get_link_by_code
+from app.redis_client import redis_client
 
 router = APIRouter(tags=["redirect"])
 
@@ -24,9 +26,19 @@ def redirect_to_url(code: str, db: Session = Depends(get_db)):
     if code in RESERVED_CODES:
         raise HTTPException(status_code=404, detail="Reserved route")
 
+    cached_url = redis_client.get(code)
+
+    if cached_url:
+        print("CACHE HIT")
+        return RedirectResponse(url=cached_url)
+
+    print("CACHE MISS")
+
     link = get_link_by_code(db, code)
 
     if not link:
         raise HTTPException(status_code=404, detail="Short link not found")
+
+    redis_client.set(code, link.long_url)
 
     return RedirectResponse(url=link.long_url)
