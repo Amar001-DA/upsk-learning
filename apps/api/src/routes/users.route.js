@@ -35,5 +35,27 @@ router.get("/", async (req, res) => {
     });
   }
 });
+const validateUser = require("../middleware/validateUser");
 
+router.post("/", validateUser, async (req, res) => {
+  try {
+    const { name } = req.body;
+
+    const newUser = {
+      id: Date.now(),
+      name,
+    };
+
+    res.status(201).json({
+      message: "User created successfully",
+      data: newUser,
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      error: "Internal server error",
+    });
+  }
+});
 module.exports = router;
