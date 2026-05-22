@@ -1,4 +1,4 @@
-cat > graphql-migration-rewrite.md <<'EOF'
+
 # REST-to-GraphQL Migration
 
 ## Decision
@@ -39,4 +39,4 @@ Mitigation: the team will evaluate resolver-level caching and persisted queries 
 
 The timeline may shift as implementation findings emerge.
 
-EOF
+

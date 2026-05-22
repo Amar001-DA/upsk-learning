@@ -1,4 +1,4 @@
-cat > technical-explanation.md <<'EOF'
+
 # Technical Explanation: REST-to-GraphQL Migration
 
 ## Decision Summary
@@ -69,4 +69,3 @@ Priya should expect to collaborate closely with the mobile and frontend teams be
 - Priya should schedule onboarding sessions with the API platform team to review GraphQL conventions, resolver patterns, and query performance guidelines.
 - The backend team will maintain both REST and GraphQL APIs during the 8-week migration window before beginning REST endpoint deprecation planning.
 
-EOF

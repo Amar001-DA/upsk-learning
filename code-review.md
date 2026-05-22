@@ -1,4 +1,4 @@
-cat > code-review.md <<'EOF'
+
 # Code Review: Add user summary generation
 
 ## Decision
