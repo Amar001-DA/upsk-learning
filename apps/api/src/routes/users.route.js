@@ -1,6 +1,9 @@
 const express = require("express");
 const redisClient = require("../config/redis");
 
+const breaker = require("../resilience/circuitBreaker");
+const retryWithBackoff = require("../resilience/retry");
+
 const router = express.Router();
 
 router.get("/", async (req, res) => {
@@ -35,27 +38,24 @@ router.get("/", async (req, res) => {
     });
   }
 });
-const validateUser = require("../middleware/validateUser");
 
-router.post("/", validateUser, async (req, res) => {
+router.get("/:id/resilient", async (req, res) => {
   try {
-    const { name } = req.body;
+    const user = await retryWithBackoff(
+      () => breaker.fire(req.params.id),
+      {
+        maxRetries: 3,
+        baseDelay: 100,
+      }
+    );
 
-    const newUser = {
-      id: Date.now(),
-      name,
-    };
-
-    res.status(201).json({
-      message: "User created successfully",
-      data: newUser,
-    });
+    res.json(user);
   } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      error: "Internal server error",
+    res.status(503).json({
+      error: "Service temporarily unavailable",
+      details: error.message,
     });
   }
 });
+
 module.exports = router;
